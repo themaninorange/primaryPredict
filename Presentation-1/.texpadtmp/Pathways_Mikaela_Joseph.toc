@@ -1,0 +1,7 @@
+\beamer@endinputifotherversion {3.36pt}
+\beamer@sectionintoc {1}{Polling and Predictions}{4}{0}{1}
+\beamer@sectionintoc {2}{Results}{23}{0}{2}
+\beamer@subsectionintoc {2}{1}{Democrats}{23}{0}{2}
+\beamer@subsectionintoc {2}{2}{Republicans}{24}{0}{2}
+\beamer@sectionintoc {3}{Future Work}{29}{0}{3}
+\beamer@sectionintoc {4}{References}{30}{0}{4}

@@ -1,0 +1,2 @@
+load("/Users/mikaelajordan/Dropbox/DataMining/Scraping/Visualization/tweets/2016-05-03_South_Dakota.Rda")
+load("/Users/mikaelajordan/Dropbox/DataMining/Scraping/Visualization/tweets/2016-04-04_District_of_Columbia.Rda")

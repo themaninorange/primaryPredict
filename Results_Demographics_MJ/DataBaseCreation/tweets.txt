@@ -1,0 +1,43 @@
+CREATE TABLE tweets (
+tweet_id	VARCHAR(18),
+keyword		VARCHAR(20),
+text		VARCHAR(140),
+fips_code	VARCHAR(5),
+isRetweet	NUMBER(1),
+screenName	VARCHAR(20),
+tweet_date	DATE,
+orig_id	VARCHAR(18),
+CONSTRAINT tweets_pk PRIMARY KEY (tweet_id)
+CONSTRAINTS tweets_fik FOREIGN KEY (fips_code) REFERENCES fips (fips_code)
+);
+
+INSERT INTO tweets VALUES('714891613349232641','Trump','rt chicpilot    stop  take  photo trump streetart  montgomery alabama httpstcoyzr7mq7bld','01001',1,'JMgazouille',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714864123037745152');
+INSERT INTO tweets VALUES('714891430909624320','Trump','rt chicpilot    stop  take  photo trump streetart  montgomery alabama httpstcoyzr7mq7bld','01001',1,'streetify',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714864123037745152');
+INSERT INTO tweets VALUES('714891322713366528','Trump','rt chicpilot    stop  take  photo trump streetart  montgomery alabama httpstcoyzr7mq7bld','01001',1,'Wilforth42',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714864123037745152');
+INSERT INTO tweets VALUES('714864123037745152','Trump','   stop  take  photo trump streetart  montgomery alabama httpstcoyzr7mq7bld','01001',0,'chicpilot',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714864123037745152');
+INSERT INTO tweets VALUES('714499839225102336','Trump','lmfao rt tevinsagenius fuck trump    walked    debate   song  wouldnt  mad httpstcofu1nvwdiqo','01001',0,'bruhkari',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714499839225102336');
+INSERT INTO tweets VALUES('715222053595521024','Bernie','bernie sanders building bridges  knocking     pensacola fl  pensacola httpstco5dddw2cgy3','01003',0,'WhiteRabbitCult',TO_DATE('apr-04-2016','mon-dd-YYYY'),'715222053595521024');
+INSERT INTO tweets VALUES('714925858977292288','Bernie','rt roythomas970 cruz thinks  jesus christ super star  bernie will give usa   uneu establishmenthillary will sell usa  uneu ','01003',1,'LarryFreeborn',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714840616144936961');
+INSERT INTO tweets VALUES('714840616144936961','Bernie','cruz thinks  jesus christ super star  bernie will give usa   uneu establishmenthillary will sell usa  uneu trump  president','01003',0,'roythomas970',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714840616144936961');
+INSERT INTO tweets VALUES('715565685942919168','HillaryClinton','hillaryclinton trump wants  jail women   constitutional rights  strip women  httpstco8lxtuainrf','01003',0,'FelineNut',TO_DATE('apr-04-2016','mon-dd-YYYY'),'715565685942919168');
+INSERT INTO tweets VALUES('714995540052852736','HillaryClinton','megynkelly richardafowler hillaryclinton  just threw    mouth  little','01003',0,'JNearen',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714995540052852736');
+INSERT INTO tweets VALUES('714500271427166208','Trump','rt roythomas970  everyone  voting trump  name  children carlos  muhammad    chance  college   job look  eur','01003',1,'JsVentro',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714469092019843072');
+INSERT INTO tweets VALUES('714499430813032448','Trump','rt roythomas970  everyone  voting trump  name  children carlos  muhammad    chance  college   job look  eur','01003',1,'Monkeyfelony',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714469092019843072');
+INSERT INTO tweets VALUES('714499177338642432','Trump','rt roythomas970  everyone  voting trump  name  children carlos  muhammad    chance  college   job look  eur','01003',1,'billbong9059',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714469092019843072');
+INSERT INTO tweets VALUES('714470538308136960','Trump','rt roythomas970  everyone  voting trump  name  children carlos  muhammad    chance  college   job look  eur','01003',1,'JOEROWE409',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714469092019843072');
+INSERT INTO tweets VALUES('714469092019843072','Trump',' everyone  voting trump  name  children carlos  muhammad    chance  college   job look  europe  wake ','01003',0,'roythomas970',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714469092019843072');
+INSERT INTO tweets VALUES('714420874531594240','Trump','rt roythomas970 trump gets 1237 delegates  im heading   throw  hell  trump celebration  always trump 2016     httpstco','01003',1,'SayPabon',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714342065740623874');
+INSERT INTO tweets VALUES('714419019814711296','Trump','rt roythomas970 trump gets 1237 delegates  im heading   throw  hell  trump celebration  always trump 2016     httpstco','01003',1,'s_chelf',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714342065740623874');
+INSERT INTO tweets VALUES('714354439394607105','Trump','rt roythomas970 trump gets 1237 delegates  im heading   throw  hell  trump celebration  always trump 2016     httpstco','01003',1,'Bales69',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714342065740623874');
+INSERT INTO tweets VALUES('714344173982199808','Trump','rt roythomas970 trump gets 1237 delegates  im heading   throw  hell  trump celebration  always trump 2016     httpstco','01003',1,'spotmegone',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714342065740623874');
+INSERT INTO tweets VALUES('714342065740623874','Trump','trump gets 1237 delegates  im heading   throw  hell  trump celebration  always trump 2016     httpstcodb9fkfnwje','01003',0,'roythomas970',TO_DATE('apr-04-2016','mon-dd-YYYY'),'714342065740623874');
+INSERT INTO tweets VALUES('713820488657739780','Bernie','utahman1850 matthewjaques  youre  bernie sanders supporter fighting   trump supporter oh wait thats    saying','01007',0,'Captain_Strongo',TO_DATE('apr-04-2016','mon-dd-YYYY'),'713820488657739780');
+INSERT INTO tweets VALUES('715618725471326209','Sanders','tyspace scottmgower  party  sanders run   trump   matter','01007',0,'Captain_Strongo',TO_DATE('apr-04-2016','mon-dd-YYYY'),'715618725471326209’);
+INSERT INTO tweets VALUES('716794181340016640','Trump','pupusa bigunclepooh kevinbyucougs oh im easy im  idiot  wont listen   great trump ','01007',0,'Captain_Strongo',TO_DATE('apr-04-2016','mon-dd-YYYY'),'716794181340016640');
+INSERT INTO tweets VALUES('716790106884063233','Trump','nataliecgordon bigunclepooh geoffjbyu  like  microcosm   whole donald trump experience','01007',0,'Captain_Strongo',TO_DATE('apr-04-2016','mon-dd-YYYY'),'716790106884063233');
+INSERT INTO tweets VALUES('716763197223604224','Trump','justintcrossley apurposefulwife    case  ive already said  wall    lds dislike trump  vote  ','01007',0,'Captain_Strongo',TO_DATE('apr-04-2016','mon-dd-YYYY'),'716763197223604224');
+INSERT INTO tweets VALUES('716760756902105088','Trump','apurposefulwife justintcrossley  know  latterday saints dont oppose trump   said  wants  build  wall right','01007',0,'Captain_Strongo',TO_DATE('apr-04-2016','mon-dd-YYYY'),'716760756902105088');
+INSERT INTO tweets VALUES('716748528173842432','Trump','apurposefulwife realdonaldtrump  cant  serious alma 48 1118   describe donald trump   way','01007',0,'Captain_Strongo',TO_DATE('apr-04-2016','mon-dd-YYYY'),'716748528173842432');
+INSERT INTO tweets VALUES('716737846640570371','Trump','mmueller88 benroush pupusa shes trying  pretend   talk wasnt  direct response  trump   supporters','01007',0,'Captain_Strongo',TO_DATE('apr-04-2016','mon-dd-YYYY'),'716737846640570371');
+INSERT INTO tweets VALUES('716729355486019585','Trump','benjamingaines scottmgower ooh take  page    trump playbook  make  egg account','01007',0,'Captain_Strongo',TO_DATE('apr-04-2016','mon-dd-YYYY'),'716729355486019585');
+INSERT INTO tweets VALUES('716378521661210624','Trump','jreubenciark   donald trump','01007',0,'Captain_Strongo',TO_DATE('apr-04-2016','mon-dd-YYYY'),'716378521661210624');

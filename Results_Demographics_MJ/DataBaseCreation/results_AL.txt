@@ -1,0 +1,31 @@
+CREATE TABLE results (
+fips_code	VARCHAR(5),
+party		VARCHAR(15),
+candidate	VARCHAR(30),
+votes		NUMBER(10),
+fraction_votes	NUMBER(4, 3),
+CONSTRAINT results_pk PRIMARY KEY (fips_code, party, candidate), 
+CONSTRAINT results_frac_check CHECK (fraction_votes BETWEEN 0 AND 1), 
+CONSTRAINT results_fk FOREIGN KEY (fips_code) REFERENCES fips (fips_code)
+);
+INSERT INTO results VALUES('01001','Democrat','Bernie Sanders',544,0.182);
+INSERT INTO results VALUES('01001','Democrat','Hillary Clinton',2387,0.8);
+INSERT INTO results VALUES('01003','Democrat','Bernie Sanders',2694,0.329);
+INSERT INTO results VALUES('01003','Democrat','Hillary Clinton',5290,0.647);
+INSERT INTO results VALUES('01007','Democrat','Bernie Sanders',246,0.197);
+INSERT INTO results VALUES('01007','Democrat','Hillary Clinton',942,0.755);
+INSERT INTO results VALUES('01001','Republican','Ben Carson',1764,0.146);
+INSERT INTO results VALUES('01001','Republican','Donald Trump',5387,0.445);
+INSERT INTO results VALUES('01001','Republican','John Kasich',421,0.035);
+INSERT INTO results VALUES('01001','Republican','Marco Rubio',1785,0.148);
+INSERT INTO results VALUES('01001','Republican','Ted Cruz',2482,0.205);
+INSERT INTO results VALUES('01003','Republican','Ben Carson',4221,0.084);
+INSERT INTO results VALUES('01003','Republican','Donald Trump',23618,0.469);
+INSERT INTO results VALUES('01003','Republican','John Kasich',2987,0.059);
+INSERT INTO results VALUES('01003','Republican','Marco Rubio',9703,0.193);
+INSERT INTO results VALUES('01003','Republican','Ted Cruz',8571,0.17);
+INSERT INTO results VALUES('01007','Republican','Ben Carson',393,0.099);
+INSERT INTO results VALUES('01007','Republican','Donald Trump',1959,0.494);
+INSERT INTO results VALUES('01007','Republican','John Kasich',84,0.021);
+INSERT INTO results VALUES('01007','Republican','Marco Rubio',444,0.112);
+INSERT INTO results VALUES('01007','Republican','Ted Cruz',1011,0.255);

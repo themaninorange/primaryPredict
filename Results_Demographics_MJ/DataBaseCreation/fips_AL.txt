@@ -1,0 +1,74 @@
+CREATE TABLE fips (
+fips_code	VARCHAR(5),
+county	VARCHAR(33),
+state	VARCHAR(2),
+CONSTRAINT fips_pk PRIMARY KEY (fips_code)
+);
+
+INSERT INTO fips VALUES('01001','Autauga County','AL');
+INSERT INTO fips VALUES('01003','Baldwin County','AL');
+INSERT INTO fips VALUES('01005','Barbour County','AL');
+INSERT INTO fips VALUES('01007','Bibb County','AL');
+INSERT INTO fips VALUES('01009','Blount County','AL');
+INSERT INTO fips VALUES('01011','Bullock County','AL');
+INSERT INTO fips VALUES('01013','Butler County','AL');
+INSERT INTO fips VALUES('01015','Calhoun County','AL');
+INSERT INTO fips VALUES('01017','Chambers County','AL');
+INSERT INTO fips VALUES('01019','Cherokee County','AL');
+INSERT INTO fips VALUES('01021','Chilton County','AL');
+INSERT INTO fips VALUES('01023','Choctaw County','AL');
+INSERT INTO fips VALUES('01025','Clarke County','AL');
+INSERT INTO fips VALUES('01027','Clay County','AL');
+INSERT INTO fips VALUES('01029','Cleburne County','AL');
+INSERT INTO fips VALUES('01031','Coffee County','AL');
+INSERT INTO fips VALUES('01033','Colbert County','AL');
+INSERT INTO fips VALUES('01035','Conecuh County','AL');
+INSERT INTO fips VALUES('01037','Coosa County','AL');
+INSERT INTO fips VALUES('01039','Covington County','AL');
+INSERT INTO fips VALUES('01041','Crenshaw County','AL');
+INSERT INTO fips VALUES('01043','Cullman County','AL');
+INSERT INTO fips VALUES('01045','Dale County','AL');
+INSERT INTO fips VALUES('01047','Dallas County','AL');
+INSERT INTO fips VALUES('01049','DeKalb County','AL');
+INSERT INTO fips VALUES('01051','Elmore County','AL');
+INSERT INTO fips VALUES('01053','Escambia County','AL');
+INSERT INTO fips VALUES('01055','Etowah County','AL');
+INSERT INTO fips VALUES('01057','Fayette County','AL');
+INSERT INTO fips VALUES('01059','Franklin County','AL');
+INSERT INTO fips VALUES('01061','Geneva County','AL');
+INSERT INTO fips VALUES('01063','Greene County','AL');
+INSERT INTO fips VALUES('01065','Hale County','AL');
+INSERT INTO fips VALUES('01067','Henry County','AL');
+INSERT INTO fips VALUES('01069','Houston County','AL');
+INSERT INTO fips VALUES('01071','Jackson County','AL');
+INSERT INTO fips VALUES('01073','Jefferson County','AL');
+INSERT INTO fips VALUES('01075','Lamar County','AL');
+INSERT INTO fips VALUES('01077','Lauderdale County','AL');
+INSERT INTO fips VALUES('01079','Lawrence County','AL');
+INSERT INTO fips VALUES('01081','Lee County','AL');
+INSERT INTO fips VALUES('01083','Limestone County','AL');
+INSERT INTO fips VALUES('01085','Lowndes County','AL');
+INSERT INTO fips VALUES('01087','Macon County','AL');
+INSERT INTO fips VALUES('01089','Madison County','AL');
+INSERT INTO fips VALUES('01091','Marengo County','AL');
+INSERT INTO fips VALUES('01093','Marion County','AL');
+INSERT INTO fips VALUES('01095','Marshall County','AL');
+INSERT INTO fips VALUES('01097','Mobile County','AL');
+INSERT INTO fips VALUES('01099','Monroe County','AL');
+INSERT INTO fips VALUES('01101','Montgomery County','AL');
+INSERT INTO fips VALUES('01103','Morgan County','AL');
+INSERT INTO fips VALUES('01105','Perry County','AL');
+INSERT INTO fips VALUES('01107','Pickens County','AL');
+INSERT INTO fips VALUES('01109','Pike County','AL');
+INSERT INTO fips VALUES('01111','Randolph County','AL');
+INSERT INTO fips VALUES('01113','Russell County','AL');
+INSERT INTO fips VALUES('01115','St. Clair County','AL');
+INSERT INTO fips VALUES('01117','Shelby County','AL');
+INSERT INTO fips VALUES('01119','Sumter County','AL');
+INSERT INTO fips VALUES('01121','Talladega County','AL');
+INSERT INTO fips VALUES('01123','Tallapoosa County','AL');
+INSERT INTO fips VALUES('01125','Tuscaloosa County','AL');
+INSERT INTO fips VALUES('01127','Walker County','AL');
+INSERT INTO fips VALUES('01129','Washington County','AL');
+INSERT INTO fips VALUES('01131','Wilcox County','AL');
+INSERT INTO fips VALUES('01133','Winston County','AL');

@@ -1,0 +1,18 @@
+{
+    "contents" : "install.packages(\"RSQLite\", dependencies = T)\ninstall.packages(\"sqldf\", dependencies = T)\n\nlibrary(RSQLite)\nlibrary(sqldf)\n\n\n# Connect to and disconnect from a database ----\ndb = datasetsDb()\ndbDisconnect(newdb)\n\n\n\n# See tables in a connection and send a query ----\ndbListTables(db)\ndbListFields(db, \"iris\")\ndbReadTable(db, \"iris\")\n\ndbGetQuery(db, \"SELECT * FROM iris WHERE Species = 'setosa'\")\nclass(dbGetQuery(db, \"SELECT * FROM iris WHERE Species = 'setosa'\"))\n\ndbRemoveTable(db, \"iris\") # This is quite permanent!\n\n\n\n# Creating a database connection from an R data frame ----\nlibrary(datasets)\nhead(state.x77)\nstate_df <- as.data.frame(state.x77)\nstate_df$Name <- rownames(state.x77)\n\nsetwd(\"~/Desktop\")\nnewdb <- dbConnect(SQLite(), dbname=\"test.sqlite\")\n\ndbWriteTable(conn = newdb, name = \"state\", value = as.data.frame(state.x77), overwrite = TRUE)\ndbListTables(newdb)\ndbReadTable(newdb, \"students\")\n\n\n\n\n# ",
+    "created" : 1477434030994.000,
+    "dirty" : true,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "1802874029",
+    "id" : "40DEBF9F",
+    "lastKnownWriteTime" : 3977854090345592576,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "type" : "r_source"
+}
