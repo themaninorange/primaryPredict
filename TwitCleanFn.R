@@ -1,8 +1,8 @@
 #### TWITTER TEXT CLEANING FUNCTION ####
 # Requires tm package - make sure to load
 library(tm)
-twat.clean = function(twit.dat){
-  # Not sure if necessary, but fuck it removing it anyways
+twit.clean = function(twit.dat){
+  # Not sure if necessary, but removing it anyways
   twit.dat$text.clean = gsub('<.*?>', '', twit.dat$text)
   # Removing punctuation 
   twit.dat$text.clean = gsub('[[:punct:]]', '', twit.dat$text.clean)
@@ -17,9 +17,7 @@ twat.clean = function(twit.dat){
 
 
 
-##### CREATING URGENT COUNTIES SHIT #####
-urgent
-
+##### CREATING URGENT COUNTIES #####
 
 urgentresults = counties[is.element(counties$state, urgent), ]
 urgent.all.dem = c(fl.dem, il.dem, mo.dem, nc.dem, oh.dem)
