@@ -12,7 +12,7 @@ mikaela = bigsetoftweets
 
 twitter.data = rbind(adam.1, adam.2, mikaela)
 
-twitter.data$text.clean = twit.clean(twitter.data)
+twitter.data$text.clean = twat.clean(twitter.data)
 
 # Adding Candidate to FIPS
 tw.data = merge(twitter.data, urgentresults, by.y = "fips")

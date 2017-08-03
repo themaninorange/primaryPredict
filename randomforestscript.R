@@ -2,8 +2,9 @@
 # For use on Republicans #
 ##########################
 
-install.packages("tm", dependencies=TRUE)
-install.packages("dclone", dependencies=TRUE)
+#install.packages("tm", dependencies=TRUE)
+#install.packages("dclone", dependencies=TRUE)
+#install.packages("randomForest", dependencies=TRUE)
 
 library(tm)
 library(stringr)
@@ -16,6 +17,10 @@ load("../../Dropbox/Visualization/newstates.Rda")
 
 statenames = strsplit("Alabama, Alaska, Arizona, Arkansas, California, Colorado, Connecticut, Delaware, District of Columbia, Florida, Georgia, Hawaii, Idaho, Illinois, Indiana, Iowa, Kansas, Kentucky, Louisiana, Maine, Maryland, Massachusetts, Michigan, Minnesota, Mississippi, Missouri, Montana, Nebraska, Nevada, New Hampshire, New Jersey, New Mexico, New York, North Carolina, North Dakota, Ohio, Oklahoma, Oregon, Pennsylvania, Rhode Island, South Carolina, South Dakota, Tennessee, Texas, Utah, Vermont, Virginia, Washington, West Virginia, Wisconsin, Wyoming",split = ", ")
 
+#tw.data is a dataframe of cleaned tweets from before the date we're looking at.
+#Here, we are removing any rows where there is missing republican data, creating a corpus,
+#   creating a document term frequency matrix, and renaming columns that have are keywords
+#   in the R scripting language.
 nalesstw = tw.data[!is.na(tw.data$rep),]
 corpus=Corpus(VectorSource(c(nalesstw$text.clean,newstates.df$text.clean)))
 tfm = DocumentTermMatrix(corpus, control = list(stopwords = stopwords('english'),
@@ -30,7 +35,10 @@ termzeroes = unname(which(colSums(tfdf[1:nrow(nalesstw),])!=0))
 tfdf = tfdf[,termzeroes]
 ###
 
-#Takes some relevant tweet information and binds those columns to DTF matrix.
+#We also want to predict on the tweet metadata.
+#Here, we take some relevant tweet information and binds those columns to term frequency matrix.
+#We also separate into training and testing data.  The training set is made of tweets from 
+#    before the date of primaries, and the testing set is made of tweets afterward.
 rtrain = cbind(Republican.Candidate = nalesstw$rep, Time.Stamp = nalesstw$created,
                Retweet.Count = nalesstw$retweetCount, Is.Retweet = nalesstw$isRetweet,
                Retweeted = nalesstw$retweeted, Keyword = nalesstw$keyword,
@@ -41,7 +49,7 @@ rtest  = cbind(Republican.Candidate = newstates.df$rep, Time.Stamp = newstates.d
                tfdf[-(1:length(nalesstw$rep)),]) # <- this only keeps the negation of nalesstw rows.
 
 
-#Changing class labels to "Trump" and "Not Trump"
+#Changing class labels to "Trump" and "Not Trump", because Cruz and Kasich are small.
 r2train = dclone(rtrain)
 levels(r2train$Republican.Candidate) = c("Trump", "Not Trump", "Cruz", "Kasich")
 r2train$Republican.Candidate[r2train$Republican.Candidate!="Trump"]="Not Trump"
@@ -52,8 +60,19 @@ levels(r2test$Republican.Candidate) = c("Trump", "Not Trump", "Cruz", "Kasich")
 r2test$Republican.Candidate[r2test$Republican.Candidate!="Trump"]="Not Trump"
 r2test$Republican.Candidate = droplevels(r2test$Republican.Candidate)
 
-#Models!
+#Let's run a model!  Predict on the training data.  (~1 minute on 10 trees)
+#    (Currently without the term "Keyword" because it's not working and nontrivial to fix.)
 r2rf = randomForest(formula = Republican.Candidate~.,data = r2train[,!(names(r2train) == "Keyword")], ntree = 10)
+
+#Let's make predictions on our test data!
+r2predrf = predict(r2rf,newdata = r2test[,!(names(r2test) == "Keyword")], 'prob')[,2]< 0.5
+confmatrix(r2test$Republican.Candidate=="Trump",r2predrf)
+
+#That seems like an acceptable result.  What was the distribution for votes, though?
+sum(r2test$Republican.Candidate == "Trump")/dim(r2test)[1]
+
+#Dang.  We were better off guessing Trump for everything.  We should look at how sure we
+#    would have to have been to make that call before beating average.
 x = ( 1:100 )/100
 y = 1:100
 for(i in 1:100){
@@ -61,23 +80,16 @@ for(i in 1:100){
   y[i] = confmatrix(r2test$Republican.Candidate=="Trump",r2predrf)$accuracy
   print(i)
 }
-png(filename = "../../Dropbox/Visualization/Beamer Presentation/RFmodelaccuracy250.png")
+
+png(filename = "/home/joseph/Dev/Data Mining 2 Final/primaryPredict/Beamer Presentation/RFmodelaccuracy250.png")
 plot(x,y, xlab = "p-threshold for Classification", ylab = "Classification Accuracy", main = "250 Tree Model", ylim = c(0,1))
+
 abline(coef = c(mean(r2train$Republican.Candidate=="Trump"), 0), col = rgb(0.7,0,0))
 abline(coef = c(mean(r2test$Republican.Candidate=="Trump"), 0), col = rgb(0,0,0.7))
 dev.off()
 
-goodpred = predict(r2rf,newdata = r2test[,!(names(r2test) == "Keyword")], 'prob')[,2]< which.max(y)/100
-goodconf = confmatrix(r2test$Republican.Candidate=="Trump", goodpred)
-
-
-###png(filename = "../../Dropbox/Visualization/Beamer Presentation/RFmodelaccuracy.png")
-###plot(x,y, xlab = "p-threshold for Classification", ylab = "Classification Accuracy")
-###abline(coef = c(alltrump, 0), col = rgb(0.7,0,0))
-###dev.off()
-
-alltrump = sum(r2test$Republican.Candidate=="Trump")/length(r2test$Republican.Candidate)
-
+#This is not a good situation.  It does not seem that these variables can be predictive of a Trump victory.
+#Let's try a model where we divide values by the number of tweets from a county
 ###
 
 #number of tweets from each county
@@ -109,12 +121,16 @@ r3rf = randomForest(formula = Republican.Candidate~. -fips,data = trainbalance, 
 r3predrf = predict(r3rf,newdata = testbalance)
 confmatrix(testbalance$Republican.Candidate,r3predrf)
 
-primarycutoff = 1458662400
+#And that looks like a success!  We have a very very narrowly higher accuracy than guessing Trump
+#   for every county.
 
 
 #######################
 #Filter tweets by date#
 #######################
+
+#Time stamp at which we cut off tweet input for training data.
+primarycutoff = 1458662400
 
 priortw = newstates.df[newstates.df$created < primarycutoff,]
 
@@ -157,10 +173,6 @@ for(i in c(fipscount1prior$fips,fipscount2prior$fips)){
     rtestprior[rtestprior$fips==i,3:ncol(rtestprior)]/fipscount2prior$Freq[fipscount2prior$fips==i]
 }
 
-
-#########
-#2-class#
-#########
 r2trainprior = dclone(rtrainprior)
 r2trainprior$Republican.Candidate = -1*(rtrainprior$Republican.Candidate==1)+2
 
@@ -172,29 +184,177 @@ r2priorpredrf = predict(r2rfprior,newdata = r2testprior)>1.5
 confmatrix(r2testprior$Republican.Candidate,r2priorpredrf)
 alltrumpprior = sum(r2testprior$Republican.Candidate==1)/length(r2testprior$Republican.Candidate)
 
-#########
-#3-class#
-#########
+#Another model more accurate than the ALLTRUMP model.
+#Let's try doing this at the county level instead of the tweet level.
 
-  #Copy of only tweets prior to the primary.
-r3trainprior = dclone(rtrainprior)
+#########################################
+# Combine tweet stats into county stats #
+#########################################
 
-  #I guess it wasn't a factor, before?
-r3trainprior$Republican.Candidate =  as.factor(rtrainprior$Republican.Candidate)
+#Time stamp at which we cut off tweet input for training data.
+primarycutoff = 1458662400
 
-  #Ditto with testing set.
-r3testprior = dclone(rtestprior)
-r3testprior$Republican.Candidate = as.factor(rtestprior$Republican.Candidate)
+priortw = newstates.df[newstates.df$created < primarycutoff,]
 
-  
-r3rfprior = randomForest(formula = Republican.Candidate~.,data = r3trainprior, ntree = 10)
+priorcorpus=Corpus(VectorSource(c(nalesstw$text.clean,priortw$text.clean)))
+priortf = DocumentTermMatrix(priorcorpus, control = list(stopwords = stopwords('english'),
+                                                         removeNumbers = T))
+priortf = removeSparseTerms(priortf, .999)
+r3priortf = as.data.frame(as.matrix(priortf))
+
+#           Combine by    fips code
+#           |             |
+#           |             |     Term frequencies            ->                                                    Sum and divide by total.
+#           |             |     |                                                                                 |
+r3priortf = aggregate(. ~ fips, cbind(as.data.frame(as.matrix(priortf)), fips = c( nalesstw$fips, priortw$fips)), mean)
+
+names(r3priortf)[names(r3priortf)=='else']='Else'
+names(r3priortf)[names(r3priortf)=='next']='Next'
+
+
+#              Stitch together
+#              |
+#              |     The word frequencies
+#              |     |          
+#              |     |          Winners and fips codes
+#              |     |          |
+r3trainprior = merge(r3priortf, aggregate(rep~fips, nalesstw, FUN=head, 1), by="fips")
+#              |     |          |
+r3testprior =  merge(r3priortf, aggregate(rep~fips, priortw,  FUN=head, 1), by="fips")
+
+names(r3trainprior)[names(r3trainprior) == 'rep.x'] = 'Republican.Candidate'
+names(r3testprior )[names(r3testprior ) == 'rep.x'] = 'Republican.Candidate'
+
+r3trainprior$Republican.Candidate = replace(r3trainprior$Republican.Candidate, r3trainprior$Republican.Candidate==0, "Trump")
+r3trainprior$Republican.Candidate = replace(r3trainprior$Republican.Candidate, r3trainprior$Republican.Candidate !="Trump", "Not Trump")
+
+r3testprior$Republican.Candidate = replace(r3testprior$Republican.Candidate, r3testprior$Republican.Candidate==0, "Trump")
+r3testprior$Republican.Candidate = replace(r3testprior$Republican.Candidate, r3testprior$Republican.Candidate !="Trump", "Not Trump")
+
+##
+numericcols = which(sapply(r3trainprior, typeof) == "double")
+priornonzeroes = unname(which(colSums(r3trainprior[numericcols])!=0))-1
+##
+
+r3priortf = r3priortf[,priornonzeroes]
+r3trainprior = r3trainprior[,priornonzeroes]
+r3testprior = r3testprior[,priornonzeroes]
+
+r3trainprior$Republican.Candidate = as.factor(r3trainprior$Republican.Candidate)
+r3testprior$Republican.Candidate  = as.factor(r3testprior$Republican.Candidate )
+
+r3rfprior = randomForest(formula = Republican.Candidate~. - fips, data = r3trainprior, ntree = 10)
 r3priorpredrf = predict(r3rfprior,newdata = r3testprior)
 confmatrix(r3testprior$Republican.Candidate,r3priorpredrf)
-  #This accuracy seems very high.  Let's check on that later.
+
+#Hey!  A model which actually predicts ALLTRUMP!
+#That's new!
+#I want to see my training accuracy...
+
+r3priorpredrf_train = predict(r3rfprior,newdata = r3trainprior)
+confmatrix(r3trainprior$Republican.Candidate,r3priorpredrf_train)
+
+#huh.  Trump just wins everything.  Let's do some democrats... 
+#    they should be more interesting.
 
 ########################
 # For Use on Democrats #
 ########################
+#########################################
+# Combine tweet stats into county stats #
+#########################################
+
+#Let's just use all of the overhead stuff from before.
+#HILLARY IS 2!!!@!#$%#@$#!@$#
+d3priortf = as.data.frame(as.matrix(priortf))
+
+#           Combine by    fips code
+#           |             |
+#           |             |     Term frequencies            ->                                                    Sum and divide by total.
+#           |             |     |                                                                                 |
+d3priortf = aggregate(. ~ fips, cbind(as.data.frame(as.matrix(priortf)), fips = c( nalesstw$fips, priortw$fips)), mean)
+
+names(d3priortf)[names(d3priortf)=='else']='Else'
+names(d3priortf)[names(d3priortf)=='next']='Next'
+
+#              Stitch together
+#              |
+#              |     The word frequencies
+#              |     |          
+#              |     |          Winners and fips codes
+#              |     |          |
+d3trainprior = merge(d3priortf, aggregate(dem~fips, nalesstw, FUN=head, 1), by="fips")
+#              |     |          |
+d3testprior =  merge(d3priortf, aggregate(dem~fips, priortw,  FUN=head, 1), by="fips")
+
+names(d3trainprior)[names(d3trainprior) == 'dem'] = 'Democratic.Candidate'
+names(d3testprior )[names(d3testprior ) == 'dem'] = 'Democratic.Candidate'
+
+d3trainprior$Democratic.Candidate = replace(d3trainprior$Democratic.Candidate, d3trainprior$Democratic.Candidate==2, "Hillary")
+d3trainprior$Democratic.Candidate = replace(d3trainprior$Democratic.Candidate, d3trainprior$Democratic.Candidate != "Hillary", "Bernie")
+
+##
+numericcols = which(sapply(d3trainprior, typeof) == "double")
+priorzeroes = unname(which(colSums(d3trainprior[numericcols])==0))
+##
+
+d3priortf = d3priortf[,-priorzeroes]
+d3trainprior = d3trainprior[,-priorzeroes]
+d3testprior = d3testprior[,-priorzeroes]
+
+d3testprior$Democratic.Candidate   = as.factor(d3testprior$Democratic.Candidate )
+d3trainprior$Democratic.Candidate  = as.factor(d3trainprior$Democratic.Candidate)
+
+d3rfprior = randomForest(formula = Democratic.Candidate~. - fips, data = d3trainprior, ntree = 10)
+d3priorpredrf = predict(d3rfprior,newdata = d3testprior)
+confmatrix(d3testprior$Democratic.Candidate,d3priorpredrf)
+
+#Wow, that actually looks pretty good.
+#What does the average look like?
+
+sum(d3testprior$Democratic.Candidate == "Bernie")/length(d3testprior$Democratic.Candidate)
+
+#We're winning by 2.4% !!!!!!
+
+##########
+# NGRAMS #
+##########
+
+####
+#START HERE NEXT
+####
+
+get_ngrams = function(document, n=2){
+  
+  temp = strsplit(document, "\\s+")[[1]]
+  ngrams = list()
+  for(i in 1:(length(temp) - n)){
+    ngram = c()
+    for(j in 1:n){
+      ngram = c(ngram, temp[i + j])
+    }
+    ngrams[[i]] = ngram
+  }
+  
+  return(ngrams)
+}
+
+strumkis = list(lapply(list(1,2,3,4,53,2,4,2,1,3,4,2,4,422,3,3,4,3,4,3,3,3,4,3), as.String),
+                lapply(list(2,3,4,6,4,3,45,56,6,7,5,45,5,7,4,3,2,3,4,5,6,4,3,4,5), as.String))
+
+table(unlist(lapply(strumkis, unlist)))
+
+aggregate_ngram_count = function(data, aggregate_column = "fips", text_column = "text", n = 2){
+  #(Consider using a formula, as well, to aggregate multiple columns of text)
+}
+
+n3gramfreq <- tm::TermDocumentMatrix(corpus, control = list(tokenize = TrigramTokenizer))
+# put into data frame
+freq.trigram.twitter <- data.frame(word = trigram.twitterTdm$dimnames$Terms, frequency = trigram.twitterTdm$v)
+# reorder by descending frequency
+freq.trigram.twitter <- plyr::arrange(freq.trigram.twitter, -frequency)
+
+primarycutoff = 1458662400
 
 priortw = newstates.df[newstates.df$created < primarycutoff,]
 
@@ -206,19 +366,16 @@ priortf = as.data.frame(as.matrix(priortf))
 names(priortf)[names(priortf)=='else']='Else'
 names(priortf)[names(priortf)=='next']='Next'
 
-dtrainprior = cbind(Democratic.Candidate = c(nalesstw$dem), priortf[1:length(nalesstw$dem),])
-dtestprior = cbind(Democratic.Candidate = c(priortw$dem), priortf[-(1:length(nalesstw$dem)),])
+rtrainprior = cbind(Republican.Candidate = c(nalesstw$rep), priortf[1:length(nalesstw$rep),])
+rtestprior = cbind(Republican.Candidate = c(priortw$rep), priortf[-(1:length(nalesstw$rep)),])
 
 ##
-priorzeroes = unname(which(colSums(dtrainprior)!=0))-1
+priorzeroes = unname(which(colSums(rtrainprior)!=0))-1
 ##
-
-dtrainprior$Democratic.Candidate = as.factor(dtrainprior$Democratic.Candidate)
-dtestprior$Democratic.Candidate = as.factor(dtestprior$Democratic.Candidate)
 
 priortf = priortf[,priorzeroes]
-dtrainprior = dtrainprior[,priorzeroes]
-dtestprior = dtestprior[,priorzeroes]
+rtrainprior = rtrainprior[,priorzeroes]
+rtestprior = rtestprior[,priorzeroes]
 
 ##
 fipscount1prior = as.data.frame(cbind(
@@ -229,86 +386,20 @@ fipscount2prior = as.data.frame(cbind(
   Freq = as.numeric(table(priortw$fips))))
 ##
 
-dtrainprior = cbind(fips = c(nalesstw$fips), dtrainprior)
-dtestprior = cbind(fips = c(priortw$fips), dtestprior)
+rtrainprior = cbind(fips = c(nalesstw$fips), rtrainprior)
+rtestprior = cbind(fips = c(priortw$fips), rtestprior)
 
 
 for(i in c(fipscount1prior$fips,fipscount2prior$fips)){
-  dtrainprior[dtrainprior$fips==i,3:ncol(dtrainprior)] = 
-    dtrainprior[dtrainprior$fips==i,3:ncol(dtrainprior)]/fipscount1prior$Freq[fipscount1prior$fips==i]
-  dtestprior[dtestprior$fips==i,3:ncol(dtestprior)] = 
-    dtestprior[dtestprior$fips==i,3:ncol(dtestprior)]/fipscount2prior$Freq[fipscount2prior$fips==i]
+  rtrainprior[rtrainprior$fips==i,3:ncol(rtrainprior)] = 
+    rtrainprior[rtrainprior$fips==i,3:ncol(rtrainprior)]/fipscount1prior$Freq[fipscount1prior$fips==i]
+  rtestprior[rtestprior$fips==i,3:ncol(rtestprior)] = 
+    rtestprior[rtestprior$fips==i,3:ncol(rtestprior)]/fipscount2prior$Freq[fipscount2prior$fips==i]
 }
 
-drfprior = randomForest(formula = Democratic.Candidate~.,data = dtrainprior, ntree = 5)
-dpriorpredrf = predict(drfprior,newdata = dtestprior)
-confmatrix(dtestprior$Democratic.Candidate,dpriorpredrf)
-confmatrix(dtrainprior$Democratic.Candidate,predict(drfprior,newdata = dtrainprior))
+r2trainprior = dclone(rtrainprior)
+r2trainprior$Republican.Candidate = -1*(rtrainprior$Republican.Candidate==1)+2
 
+r2testprior = dclone(rtestprior)
+r2testprior$Republican.Candidate = -1*(r2testprior$Republican.Candidate==1)+2
 
-########################################
-# Make predictions at the county level #
-########################################
-
-#The following block creates the data frame and stitches all of the tweets together.
-countydf = nalesstw[FALSE,][,c('fips', 'text.clean','dem','rep')]
-uniqfips = unique(nalesstw$fips)
-for(i in 1:length(uniqfips)){
-  countydf[i,] = c(0, "", 0, 0)
-  temptw = nalesstw[nalesstw$fips==uniqfips[i],]
-  countydf$fips[i] = uniqfips[i]
-  countydf$text.clean[i] = paste(temptw$text.clean, collapse = " ")
-  countydf$dem[i] = temptw$dem[1]
-  countydf$rep[i] = temptw$rep[1]
-}
-
-countydf2 = newstates.df[FALSE,][,c('fips', 'text.clean','dem','rep')]
-uniqfips2 = unique(newstates.df$fips)
-for(i in 1:length(uniqfips2)){
-  countydf2[i,] = c(0, "", 0, 0)
-  temptw = newstates.df[newstates.df$fips==uniqfips2[i],]
-  countydf2$fips[i] = uniqfips2[i]
-  countydf2$text.clean[i] = paste(temptw$text.clean, collapse = " ")
-  countydf2$dem[i] = temptw$dem[1]
-  countydf2$rep[i] = temptw$rep[1]
-}
-
-corpus=Corpus(VectorSource(c(countydf$text.clean,countydf2$text.clean)))
-tfm = DocumentTermMatrix(corpus, control = list(stopwords = stopwords('english'),
-                                                removeNumbers = T))
-tfm = removeSparseTerms(tfm, .999)
-tfdf = as.data.frame(as.matrix(tfm))
-
-###
-dotify = function(x){
-  return(paste(c('.', x), collapse = ''))
-}
-names(tfdf) = sapply(tolower(names(tfdf)), FUN = dotify)
-
-termzeroes = unname(which(colSums(tfdf[1:nrow(countydf),])!=0))
-tfdf = tfdf[,termzeroes]
-###
-
-
-
-#Takes some relevant tweet information and binds those columns to DTF matrix.
-rcountytrain = cbind(Republican.Candidate = countydf$rep, 
-                     tfdf[1:length(countydf$rep),])
-rcountytest  = cbind(Republican.Candidate = countydf2$rep,
-                     tfdf[-(1:length(countydf$rep)),]) # <- this only keeps the negation of nalesstw rows.
-
-#Changing class labels to "Trump" and "Not Trump"
-r2train = dclone(rcountytrain)
-levels(r2train$Republican.Candidate) = c("Trump", "Not Trump", "Cruz", "Kasich")
-r2train$Republican.Candidate[r2train$Republican.Candidate!="Trump"]="Not Trump"
-r2train$Republican.Candidate = droplevels(r2train$Republican.Candidate)
-
-r2test = dclone(rcountytest)
-levels(r2test$Republican.Candidate) = c("Trump", "Not Trump", "Cruz", "Kasich")
-r2test$Republican.Candidate[r2test$Republican.Candidate!="Trump"]="Not Trump"
-r2test$Republican.Candidate = droplevels(r2test$Republican.Candidate)
-
-#Models!
-r2rf = randomForest(formula = Republican.Candidate~.,data = r2train, ntree = 100)
-predr2rf = predict(r2rf, newdata = r2test)
-confmatrix(r2test$Republican.Candidate, predr2rf)

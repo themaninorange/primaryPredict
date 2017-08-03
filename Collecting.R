@@ -30,7 +30,7 @@ for(i in 6:10){
 }
 
 mikaela.tweet = bigsetoftweets
-mikaela.tweet$text.clean = twit.clean(mikaela.tweet)
+mikaela.tweet$text.clean = twat.clean(mikaela.tweet)
 
 save(mikaela.tweet, file = "~/Dropbox/DataMining/Scraping/Visualization/DataFunctions/mikaelacleanurgent.Rda")
 save(bigsetoftweets, file = "~/Dropbox/DataMining/Scraping/Visualization/DataFunctions/mikaeladirtyurgent.Rda")

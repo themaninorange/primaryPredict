@@ -1,7 +1,7 @@
 #### TWITTER TEXT CLEANING FUNCTION ####
 # Requires tm package - make sure to load
 library(tm)
-twit.clean = function(twit.dat){
+twat.clean = function(twit.dat){
   # Not sure if necessary, but fuck it removing it anyways
   twit.dat$text.clean = gsub('<.*?>', '', twit.dat$text)
   # Removing punctuation 

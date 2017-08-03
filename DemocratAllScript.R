@@ -1,6 +1,6 @@
 load('~/Dropbox/DataMining/Scraping/Visualization/newstatesdata.Rda')
 newstates.df = AZ_ID_UTtweets
-newstates.df$text.clean = twit.clean(AZ_ID_UTtweets)
+newstates.df$text.clean = twat.clean(AZ_ID_UTtweets)
 
 newstates.df = merge(newstates.df, newresults, by.y = "fips")
 

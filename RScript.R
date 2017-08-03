@@ -5,7 +5,10 @@ library(RColorBrewer)
 library(twitteR)
 
 ## Twitter Setup Stuff ##
-#setup_twitter_oauth(*********************)
+setup_twitter_oauth(consumer_key="rejRHFs2W0JA41vLUxGdOJWXA",
+                    consumer_secret ="ErnEMsyMLmDOlYNIGE6pD36qhTulnQUcHAG7RwGNIMbeaupZzG",
+                    access_token="272953871-SjsyWzXRK5nfty6ZbcaRjiJIMRf59rDJggu0Aw6g",
+                    access_secret="nCScvoxVQx1ZVaKUHqX2hDcbCU8h9dZOlo0yHpyaLLhEJ")
 
 
 ## Scraping Tweets, Cleaning Tweets, Etc ##
