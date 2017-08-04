@@ -5,7 +5,7 @@ Sentiment analysis revolves around establishing whether a document expresses pos
 
 Word Cloud by Party | ~
 :-------------------------:|:-------------------------:
-![alt text](https://github.com/themaninorange/primaryPredict/blob/master/Presentation/wcdemwithRT.png "Logo Title Text 1")  | ![alt text](https://github.com/themaninorange/primaryPredict/blob/master/Presentation/wcrepwithRT.png "Logo Title Text 1")
+![alt text](https://github.com/themaninorange/primaryPredict/blob/master/visuals/demwordcloud.png "Democrat Word Cloud")  | ![alt text](https://github.com/themaninorange/primaryPredict/blob/master/visuals/repwordcloud.png "Republican Word Cloud")
 
 
 
