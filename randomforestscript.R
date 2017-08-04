@@ -149,7 +149,6 @@ rtestprior = cbind(Republican.Candidate = c(priortw$rep), priortf[-(1:length(nal
 priorzeroes = unname(which(colSums(rtrainprior)!=0))-1
 ##
 
-priortf = priortf[,priorzeroes]
 rtrainprior = rtrainprior[,priorzeroes]
 rtestprior = rtestprior[,priorzeroes]
 
@@ -195,6 +194,10 @@ alltrumpprior = sum(r2testprior$Republican.Candidate==1)/length(r2testprior$Repu
 primarycutoff = 1458662400
 
 priortw = newstates.df[newstates.df$created < primarycutoff,]
+
+#Cursory research reveals that Sanders wins Calhoun County.
+#  We will replace the NAs, here.
+priortw$dem[priortw$fips== 49033] = "Bernie"
 
 priorcorpus=Corpus(VectorSource(c(nalesstw$text.clean,priortw$text.clean)))
 priortf = DocumentTermMatrix(priorcorpus, control = list(stopwords = stopwords('english'),
@@ -295,7 +298,7 @@ d3trainprior$Democratic.Candidate = replace(d3trainprior$Democratic.Candidate, d
 
 ##
 numericcols = which(sapply(d3trainprior, typeof) == "double")
-priorzeroes = unname(which(colSums(d3trainprior[numericcols])==0))
+priorzeroes = unname(which(colSums(d3trainprior[,numericcols])==0))
 ##
 
 d3priortf = d3priortf[,-priorzeroes]
@@ -305,9 +308,12 @@ d3testprior = d3testprior[,-priorzeroes]
 d3testprior$Democratic.Candidate   = as.factor(d3testprior$Democratic.Candidate )
 d3trainprior$Democratic.Candidate  = as.factor(d3trainprior$Democratic.Candidate)
 
-d3rfprior = randomForest(formula = Democratic.Candidate~. - fips, data = d3trainprior, ntree = 10)
+d3rfprior = randomForest(formula = Democratic.Candidate~. - fips, data = d3trainprior, ntree = 100)
 d3priorpredrf = predict(d3rfprior,newdata = d3testprior)
 confmatrix(d3testprior$Democratic.Candidate,d3priorpredrf)
+
+d3priorpredrf_train = predict(d3rfprior,newdata = d3trainprior)
+confmatrix(d3trainprior$Democratic.Candidate,d3priorpredrf_train)
 
 #Wow, that actually looks pretty good.
 #What does the average look like?
