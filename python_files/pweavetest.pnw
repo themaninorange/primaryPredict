@@ -1,0 +1,27 @@
+
+\documentclass{article}
+\usepackage{fullpage}
+
+
+\begin{document}
+
+\centering
+
+\Huge
+Hello, its me.
+
+<<>>=
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+X=np.array([[20], [16], [19.8], [18.4], [17.1], [15.5], [14.7], [17.1], [15.4], [16.2], [15], [17.2], [16], [17], [14.4]])
+y=np.array([[88.6], [71.6], [93.3], [84.3], [80.6], [75.2], [69.7], [82], [69.4], [83.3], [79.6], [82.6], [80.6], [83.5], [76.3]])
+@
+
+\section{Dickbutt}
+<<echo=True>>=
+est= sm.OLS(y, X)
+results=(est).fit()
+results.summary()
+@
+\end{document}
