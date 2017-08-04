@@ -1,3 +1,0 @@
-# Python tests
-
-import nltk
